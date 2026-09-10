@@ -1,4 +1,4 @@
-package com.miguelsouza.libraryapi.model;
+package com.miguelsouza.libraryapi.model.enums;
 
 public enum GeneroLivro {
 

@@ -1,4 +1,4 @@
-package com.miguelsouza.libraryapi;
+package com.miguelsouza.libraryapi.config;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
