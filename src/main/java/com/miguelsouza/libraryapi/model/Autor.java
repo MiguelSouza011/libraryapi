@@ -33,6 +33,7 @@ public class Autor {
     @Deprecated
     public  Autor() {}
 
-    @OneToMany(mappedBy = "autor")
+    //@OneToMany(mappedBy = "autor")
+    @Transient
     private List<Livro> livros;
 }
