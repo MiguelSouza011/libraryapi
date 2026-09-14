@@ -6,6 +6,7 @@ import com.miguelsouza.libraryapi.model.enums.GeneroLivro;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -108,5 +109,17 @@ public class AutorRepositoryTest {
         repository.save(autor);
 
         livroRepository.saveAll(autor.getLivros());
+    }
+
+    @Test
+    @Transactional
+    void listarLivrosAutor() {
+        var id = UUID.fromString("fe807bda-df22-4dda-ad08-543e1e7993b1");
+        var autor = repository.findById(id).get();
+
+        List<Livro> livrosLista = livroRepository.findByAutor(autor);
+        autor.setLivros(livrosLista);
+
+        autor.getLivros().forEach(System.out::println);
     }
     }
