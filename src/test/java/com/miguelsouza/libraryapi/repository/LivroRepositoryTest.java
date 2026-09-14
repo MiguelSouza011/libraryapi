@@ -23,10 +23,10 @@ class LivroRepositoryTest {
     @Test
     void salvarLivro() {
         Livro livro = new Livro();
-        livro.setIsbn("90887-84874");
+        livro.setIsbn("90952-84874");
         livro.setPreco(BigDecimal.valueOf(100));
         livro.setGenero(GeneroLivro.FICCAO);
-        livro.setTitulo("UFO");
+        livro.setTitulo("Metarmofose");
         livro.setDataPublicacao(LocalDate.of(1980, 1, 2));
 
         Autor autor = autorRepository.findById(UUID.fromString("13396780-d2fb-4fe7-bb44-9a86eef5e677")).orElse(null);
@@ -34,5 +34,64 @@ class LivroRepositoryTest {
         livro.setAutor(autor);
 
         repository.save(livro);
+    }
+
+    @Test
+    void salvarAutorELivro() {
+        Livro livro = new Livro();
+        livro.setIsbn("10552-84874");
+        livro.setPreco(BigDecimal.valueOf(100));
+        livro.setGenero(GeneroLivro.MISTERIO);
+        livro.setTitulo("A empregada");
+        livro.setDataPublicacao(LocalDate.of(1980, 1, 2));
+
+        Autor autor = new Autor();
+        autor.setNome("Freida macfaden");
+        autor.setNacionalidade("Brasileira");
+        autor.setDataNascimento(LocalDate.of(1951, 1, 31));
+
+        autorRepository.save(autor);
+
+        livro.setAutor(autor);
+
+        repository.save(livro);
+    }
+
+    @Test
+    void salvarCascadeTest() {
+        Livro livro = new Livro();
+        livro.setIsbn("90952-84874");
+        livro.setPreco(BigDecimal.valueOf(100));
+        livro.setGenero(GeneroLivro.FICCAO);
+        livro.setTitulo("Metarmofose");
+        livro.setDataPublicacao(LocalDate.of(1980, 1, 2));
+
+        Autor autor = new Autor();
+        autor.setNome("Jonas");
+        autor.setNacionalidade("Brasileira");
+        autor.setDataNascimento(LocalDate.of(1951, 1, 31));
+
+
+        livro.setAutor(autor);
+
+        repository.save(livro);
+    }
+    @Test
+    void atualizarAutorDoLivro() {
+        var livroParaAtualizar = repository.findById(UUID.fromString("9323e476-8225-4b6a-a018-eadfb59fee18")).orElse(null);
+
+        UUID idAutor = UUID.fromString("13396780-d2fb-4fe7-bb44-9a86eef5e677");
+        Autor maria = autorRepository.findById(idAutor).orElse(null);
+
+        livroParaAtualizar.setAutor(maria);
+
+        repository.save(livroParaAtualizar);
+    }
+
+    @Test
+    void deletar() {
+        UUID id = UUID.fromString("9323e476-8225-4b6a-a018-eadfb59fee18");
+        var livroParaAtualizar = repository.findById(id).orElse(null);
+        repository.deleteById(id);
     }
 }
