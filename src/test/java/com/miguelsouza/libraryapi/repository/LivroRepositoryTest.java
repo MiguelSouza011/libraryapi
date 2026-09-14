@@ -6,6 +6,7 @@ import com.miguelsouza.libraryapi.model.enums.GeneroLivro;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -93,5 +94,18 @@ class LivroRepositoryTest {
         UUID id = UUID.fromString("9323e476-8225-4b6a-a018-eadfb59fee18");
         var livroParaAtualizar = repository.findById(id).orElse(null);
         repository.deleteById(id);
+    }
+
+    @Test
+    @Transactional
+    void buscarLivroTest() {
+        UUID id = UUID.fromString("7601f561-ef71-4c1b-a707-97728e5724ec");
+        Livro livro = repository.findById(id).orElse(null);
+
+        System.out.println("Livro: ");
+        System.out.println(livro.getTitulo());
+
+        System.out.println("Autor: ");
+        System.out.println(livro.getAutor().getNome());
     }
 }
