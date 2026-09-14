@@ -1,11 +1,15 @@
 package com.miguelsouza.libraryapi.repository;
 
 import com.miguelsouza.libraryapi.model.Autor;
+import com.miguelsouza.libraryapi.model.Livro;
+import com.miguelsouza.libraryapi.model.enums.GeneroLivro;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -15,6 +19,9 @@ public class AutorRepositoryTest {
 
     @Autowired
     AutorRepository repository;
+
+    @Autowired
+    LivroRepository livroRepository;
 
     @Test
     public void salvarTest() {
@@ -68,5 +75,38 @@ public class AutorRepositoryTest {
         var id = UUID.fromString("32baaceb-3e9e-4114-a991-cae2b3f656b8");
         var maria = repository.findById(id).get();
         repository.deleteById(id);
+    }
+
+    @Test
+    void salvarAutorComLivros() {
+
+        Autor autor = new Autor();
+        autor.setNome("Antonio");
+        autor.setNacionalidade("Americano");
+        autor.setDataNascimento(LocalDate.of(1978, 7, 29));
+
+        Livro livro = new Livro();
+        livro.setIsbn("92045-84874");
+        livro.setPreco(BigDecimal.valueOf(204));
+        livro.setGenero(GeneroLivro.ROMANCE);
+        livro.setTitulo("Noites brancas");
+        livro.setDataPublicacao(LocalDate.of(2004, 6, 5));
+        livro.setAutor(autor);
+
+        Livro livro2 = new Livro();
+        livro2.setIsbn("25334-84874");
+        livro2.setPreco(BigDecimal.valueOf(150));
+        livro2.setGenero(GeneroLivro.ROMANCE);
+        livro2.setTitulo("Biding 13");
+        livro2.setDataPublicacao(LocalDate.of(2018, 9, 5));
+        livro2.setAutor(autor);
+
+        autor.setLivros(new ArrayList<>());
+        autor.getLivros().add(livro);
+        autor.getLivros().add(livro2);
+
+        repository.save(autor);
+
+        livroRepository.saveAll(autor.getLivros());
     }
     }
