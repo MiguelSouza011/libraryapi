@@ -4,8 +4,10 @@ import com.miguelsouza.libraryapi.model.Autor;
 import com.miguelsouza.libraryapi.model.Livro;
 import com.miguelsouza.libraryapi.model.enums.GeneroLivro;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -56,4 +58,14 @@ public interface LivroRepository extends JpaRepository<Livro, UUID> {
             GeneroLivro generoLivro,
             String nomePropriedade
     );
+
+    @Transactional
+    @Modifying
+    @Query(" delete from Livro where genero = ?1 ")
+    void deleteByGenero(GeneroLivro genero);
+
+    @Transactional
+    @Modifying
+    @Query(" update Livro set dataPublicacao = ?1 where id = ?2 ")
+    void upodateDataPublicacao(LocalDate novaData);
 }
