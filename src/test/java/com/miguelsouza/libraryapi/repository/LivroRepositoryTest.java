@@ -130,4 +130,28 @@ class LivroRepositoryTest {
         List<Livro> lista = repository.findByTituloAndPreco("Biding 13", preco);
         lista.forEach(System.out::println);
     }
+
+    @Test
+    void listarLivrosComQueryJPQL() {
+        var resultado = repository.listarTodosOrdenadoPorTituloAndPreco();
+        resultado.forEach(System.out::println);
+    }
+
+    @Test
+    void listarAutoresDosLivros() {
+        var resultado = repository.listarAutoresDosLivros();
+        resultado.forEach(System.out::println);
+    }
+
+    @Test
+    void listarNomesLivros() {
+        var resultado = repository.listarNomesLivros();
+        resultado.forEach(System.out::println);
+    }
+
+    @Test
+    void listarGenerosAutoresBrasileiros() {
+        var resultado = repository.ListarGenerosAutoresBrasileiros();
+        resultado.forEach(System.out::println);
+    }
 }
