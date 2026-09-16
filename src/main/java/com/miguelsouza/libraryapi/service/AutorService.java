@@ -2,6 +2,7 @@ package com.miguelsouza.libraryapi.service;
 
 import com.miguelsouza.libraryapi.model.Autor;
 import com.miguelsouza.libraryapi.repository.AutorRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +20,13 @@ public class AutorService {
 
     public Autor salvar(Autor autor) {
         return repository.save(autor);
+    }
+
+    public void update(Autor autor) {
+        if (autor.getId() == null) {
+            throw new IllegalArgumentException("Para atualizar, é necessario um autor já salvo");
+        }
+        repository.save(autor);
     }
 
     public Optional<Autor> obterPorId(UUID id) {
@@ -45,4 +53,5 @@ public class AutorService {
 
         return repository.findAll();
     }
+
 }
