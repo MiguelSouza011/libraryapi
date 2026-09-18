@@ -38,7 +38,7 @@ public class Autor {
     @Deprecated
     public  Autor() {}
 
-    @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "autor") //, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Livro> livros;
 
     @CreatedDate

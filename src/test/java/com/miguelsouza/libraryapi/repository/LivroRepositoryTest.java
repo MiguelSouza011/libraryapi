@@ -31,7 +31,7 @@ class LivroRepositoryTest {
         livro.setTitulo("Ciencias humanas");
         livro.setDataPublicacao(LocalDate.of(1995, 5, 2));
 
-        Autor autor = autorRepository.findById(UUID.fromString("fe807bda-df22-4dda-ad08-543e1e7993b1")).orElse(null);
+        Autor autor = autorRepository.findById(UUID.fromString("a5438439-954f-4194-a3d9-26d859467ff7")).orElse(null);
 
         livro.setAutor(autor);
 
