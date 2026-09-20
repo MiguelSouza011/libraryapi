@@ -1,5 +1,6 @@
 package com.miguelsouza.libraryapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,7 +39,8 @@ public class Autor {
     @Deprecated
     public  Autor() {}
 
-    @OneToMany(mappedBy = "autor") //, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "autor")
+    @JsonIgnoreProperties("autor")//, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Livro> livros;
 
     @CreatedDate

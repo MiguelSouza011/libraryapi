@@ -1,5 +1,6 @@
 package com.miguelsouza.libraryapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.miguelsouza.libraryapi.model.enums.GeneroLivro;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -43,6 +44,7 @@ public class Livro {
 
     @ManyToOne(fetch = FetchType.LAZY)//(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_autor")
+    @JsonIgnoreProperties("livros")
     private Autor autor;
 
     @Deprecated
