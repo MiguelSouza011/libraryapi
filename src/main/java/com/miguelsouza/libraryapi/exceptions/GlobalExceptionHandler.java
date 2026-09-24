@@ -39,9 +39,19 @@ public class GlobalExceptionHandler {
         return ErrorResponse.response(e.getMessage());
     }
 
+    @ExceptionHandler(CampoInvalidoException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public ErrorResponse handleCampoInvalidoException(CampoInvalidoException e) {
+        return new ErrorResponse(
+                HttpStatus.UNPROCESSABLE_ENTITY.value(),
+                "Erro de validação",
+                List.of(new ErrorCamp(e.getCampo(), e.getMessage())));
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleErrosNaoTratados(Exception e) {
+        System.out.println(e.getMessage());
         return new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Ocorreu um erro inesperado entre em contato com a administração",
