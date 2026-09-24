@@ -28,4 +28,24 @@ public class GlobalExceptionHandler {
                 "Erro de validação",
                 listaErros);
     }
+
+    @ExceptionHandler(RegistroDuplicadoException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleRegistroDuplicadoException(RegistroDuplicadoException e) {
+        return ErrorResponse.conflict(e.getMessage());
+    }
+
+    @ExceptionHandler(OperacaoNaoPermitidaException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleOperacaoNaoPermitidaException(OperacaoNaoPermitidaException e) {
+        return ErrorResponse.response(e.getMessage());
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleErrosNaoTratados(RuntimeException e) {
+        return new ErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Ocorreu um erro inesperado entre em contato com a administração", List.of());
+    }
 }
