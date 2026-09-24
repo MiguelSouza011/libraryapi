@@ -59,4 +59,12 @@ public class LivroService {
 
        return repository.findAll(specs);
    }
+
+    public void atualizar(Livro livro) {
+       if (livro.getId() == null) {
+           throw new IllegalArgumentException("Para atualizar, é necessário que o autor esteja cadastrado!");
+       }
+
+       repository.save(livro);
+    }
 }
