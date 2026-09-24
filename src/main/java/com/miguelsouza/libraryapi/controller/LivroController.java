@@ -8,6 +8,7 @@ import com.miguelsouza.libraryapi.model.enums.GeneroLivro;
 import com.miguelsouza.libraryapi.service.LivroService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("livros")
 @RequiredArgsConstructor
-public class LivroController implements GenericController{
+public class LivroController implements GenericController {
 
     private final LivroService service;
     private final LivroMapper mapper;
@@ -37,7 +38,7 @@ public class LivroController implements GenericController{
                 .map(livro -> {
                     var dto = mapper.toDTO(livro);
                     return ResponseEntity.ok(dto);
-                }).orElseGet( () -> ResponseEntity.notFound().build() );
+                }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("{id}")
@@ -46,11 +47,11 @@ public class LivroController implements GenericController{
                 .map(livro -> {
                     service.deletar(livro);
                     return ResponseEntity.noContent().build();
-                }).orElseGet( () -> ResponseEntity.notFound().build() );
+                }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping
-    public ResponseEntity<List<PesquisaLivroDTO>> pesquisa(
+    public ResponseEntity<Page<PesquisaLivroDTO>> pesquisa(
             @RequestParam(value = "isbn", required = false)
             String isbn,
             @RequestParam(value = "titulo", required = false)
@@ -60,15 +61,19 @@ public class LivroController implements GenericController{
             @RequestParam(value = "genero", required = false)
             GeneroLivro genero,
             @RequestParam(value = "ano-publicacao", required = false)
-            Integer anoPublicacao
+            Integer anoPublicacao,
+            @RequestParam(value = "pagina", defaultValue = "0")
+            Integer pagina,
+            @RequestParam(value = "tamanho-pagina", defaultValue = "10")
+            Integer tamanhoPagina
     ) {
-        var resultado = service.pesquisa(isbn, titulo, nomeAutor, genero, anoPublicacao);
-        var lista = resultado
-                .stream().map(mapper::toDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(lista);
+        Page<Livro> paginaResultado = service.pesquisa(
+                isbn, titulo, nomeAutor, genero, anoPublicacao, pagina, tamanhoPagina);
+        Page<PesquisaLivroDTO> resultado = paginaResultado.map(mapper::toDTO);
+        return ResponseEntity.ok(resultado);
+    }
 
-    }@PutMapping("{id}")
+    @PutMapping("{id}")
     public ResponseEntity<Object> atualizar(@PathVariable("id") String id,
                                           @RequestBody CadastroLivroDTO dto) {
         return service.obterPorId(UUID.fromString(id))
