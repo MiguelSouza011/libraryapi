@@ -26,31 +26,23 @@ public class Autor {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
     @Column(name = "nome", length = 100, nullable = false)
     private String nome;
-
     @Column(name = "data_nascimento", nullable = false)
     private LocalDate dataNascimento;
-
     @Column(name = "nacionalidade", length = 10, nullable = false)
     private String nacionalidade;
-
     @Deprecated
     public  Autor() {}
-
     @OneToMany(mappedBy = "autor")
     @JsonIgnoreProperties("autor")//, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Livro> livros;
-
     @CreatedDate
     @Column(name = "data_cadastro")
     private LocalDateTime dataCadastro;
-
     @LastModifiedDate
     @Column(name = "data_atualizacao")
     private LocalDateTime dataAtualizacao;
-
     @Column(name = "id_usuario")
     private UUID idUsuario;
 }

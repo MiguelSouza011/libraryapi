@@ -13,10 +13,7 @@ public abstract class LivroMapper {
 
     @Autowired
     AutorRepository autorRepository;
-
     @Mapping(target = "autor", expression = "java( autorRepository.findById(dto.idAutor()).orElse(null))")
     public abstract Livro toEntity(CadastroLivroDTO dto);
-
-
     public abstract PesquisaLivroDTO toDTO(Livro livro);
 }

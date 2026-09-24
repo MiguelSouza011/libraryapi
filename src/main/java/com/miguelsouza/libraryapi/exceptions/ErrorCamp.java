@@ -1,4 +1,4 @@
-package com.miguelsouza.libraryapi.controller.dto;
+package com.miguelsouza.libraryapi.exceptions;
 
 public record ErrorCamp(String camp, String error) {
 }

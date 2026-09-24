@@ -1,7 +1,5 @@
 package com.miguelsouza.libraryapi.exceptions;
 
-import com.miguelsouza.libraryapi.controller.dto.ErrorCamp;
-import com.miguelsouza.libraryapi.controller.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;

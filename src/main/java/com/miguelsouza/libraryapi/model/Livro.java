@@ -25,39 +25,29 @@ public class Livro {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
     @Column(name = "isbn", length = 20, nullable = false)
     private String isbn;
-
     @Column(name = "titulo", length = 150, nullable = false)
     private String titulo;
-
     @Column(name = "data_publicacao", nullable = false)
     private LocalDate dataPublicacao;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "genero", length = 30, nullable = false)
     private GeneroLivro genero;
-
     @Column(name = "preco", precision = 18, scale = 2)
     private BigDecimal preco;
-
     @ManyToOne(fetch = FetchType.LAZY)//(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_autor")
     @JsonIgnoreProperties("livros")
     private Autor autor;
-
     @Deprecated
     public Livro() {}
-
     @CreatedDate
     @Column(name = "data_cadastro")
     private LocalDateTime dataCadastro;
-
     @LastModifiedDate
     @Column(name = "data_atualizacao")
     private LocalDateTime dataAtualizacao;
-
     @Column(name = "id_usuario")
     private UUID idUsuario;
 }

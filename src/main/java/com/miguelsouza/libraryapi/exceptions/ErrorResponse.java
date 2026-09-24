@@ -1,4 +1,4 @@
-package com.miguelsouza.libraryapi.controller.dto;
+package com.miguelsouza.libraryapi.exceptions;
 
 import org.springframework.http.HttpStatus;
 
