@@ -41,11 +41,12 @@ public class GlobalExceptionHandler {
         return ErrorResponse.response(e.getMessage());
     }
 
-    @ExceptionHandler(RuntimeException.class)
+    @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleErrosNaoTratados(RuntimeException e) {
+    public ErrorResponse handleErrosNaoTratados(Exception e) {
         return new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Ocorreu um erro inesperado entre em contato com a administração", List.of());
+                "Ocorreu um erro inesperado entre em contato com a administração",
+                List.of());
     }
 }
