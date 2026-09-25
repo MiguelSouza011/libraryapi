@@ -4,11 +4,14 @@ package com.miguelsouza.libraryapi.controller;
 import com.miguelsouza.libraryapi.controller.dto.AutorDTO;
 import com.miguelsouza.libraryapi.controller.mappers.AutorMapper;
 import com.miguelsouza.libraryapi.model.Autor;
+import com.miguelsouza.libraryapi.model.Usuario;
+import com.miguelsouza.libraryapi.security.SecurityService;
 import com.miguelsouza.libraryapi.service.AutorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -24,6 +27,7 @@ public class AutorController implements GenericController {
 
     private final AutorService service;
     private final AutorMapper mapper;
+    private final SecurityService securityService;
 
     @PostMapping
     @PreAuthorize("hasRole('GERENTE')")
