@@ -35,9 +35,9 @@ public class SecurityConfig {
             HttpSecurity http, LoginSocialSuccessHandler successHandler) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-                //.formLogin(configurer -> {
-                   // configurer.loginPage("/login");
-                //})
+                .formLogin(configurer -> {
+                    configurer.loginPage("/login");
+                })
                 .formLogin(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults())
                 .authorizeHttpRequests(authorize -> {
@@ -47,7 +47,9 @@ public class SecurityConfig {
                     authorize.anyRequest().authenticated();
                 })
                 .oauth2Login(oauth2 -> {
-                    oauth2.successHandler(successHandler);
+                    oauth2
+                            .loginPage("/login")
+                            .successHandler(successHandler);
                 })
                 .build();
     }
