@@ -47,7 +47,7 @@ public class SecurityConfig {
                 .build();
     }
 
-    @Bean
+    //@Bean
     public UserDetailsService userDetailsService(UsuarioService usuarioService) {
         return new CustomUserDetailsService(usuarioService);
     }
