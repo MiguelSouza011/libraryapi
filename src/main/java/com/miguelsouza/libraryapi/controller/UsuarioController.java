@@ -3,6 +3,7 @@ package com.miguelsouza.libraryapi.controller;
 import com.miguelsouza.libraryapi.controller.dto.UsuarioDTO;
 import com.miguelsouza.libraryapi.controller.mappers.UsuarioMapper;
 import com.miguelsouza.libraryapi.service.UsuarioService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ public class UsuarioController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void salvar(@RequestBody UsuarioDTO dto) {
+    public void salvar(@RequestBody @Valid UsuarioDTO dto) {
         var usuario = mapper.toEntity(dto);
         usuarioService.save(usuario);
     }

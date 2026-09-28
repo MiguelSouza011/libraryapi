@@ -20,6 +20,8 @@ public class Usuario {
     private String login;
     @Column
     private String senha;
+    @Column
+    private String email;
     @Type(ListArrayType.class)
     @Column(name = "roles", columnDefinition = "varchar[]")
     private List<String> roles;
