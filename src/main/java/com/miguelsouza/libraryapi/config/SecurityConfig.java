@@ -1,6 +1,7 @@
 package com.miguelsouza.libraryapi.config;
 
 import com.miguelsouza.libraryapi.security.CustomUserDetailsService;
+import com.miguelsouza.libraryapi.security.LoginSocialSuccessHandler;
 import com.miguelsouza.libraryapi.service.UsuarioService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,7 +31,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(
+            HttpSecurity http, LoginSocialSuccessHandler successHandler) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 //.formLogin(configurer -> {
@@ -44,7 +46,9 @@ public class SecurityConfig {
 
                     authorize.anyRequest().authenticated();
                 })
-                .oauth2Login(Customizer.withDefaults())
+                .oauth2Login(oauth2 -> {
+                    oauth2.successHandler(successHandler);
+                })
                 .build();
     }
 
