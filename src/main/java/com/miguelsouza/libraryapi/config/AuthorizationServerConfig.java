@@ -7,6 +7,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
@@ -24,14 +25,19 @@ public class AuthorizationServerConfig {
     @Order(1)
     public SecurityFilterChain authServerSecurityFilterChain(HttpSecurity http) throws Exception {
 
-        http.oauth2AuthorizationServer(authorizationServer ->
-                authorizationServer.oidc(Customizer.withDefaults()));
+        OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
+                new OAuth2AuthorizationServerConfigurer();
 
-        http.oauth2ResourceServer(oauth2Rs ->
-                oauth2Rs.jwt(Customizer.withDefaults()));
-
-        http.formLogin(configurer ->
-                configurer.loginPage("/login"));
+        http
+                .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
+                .with(authorizationServerConfigurer, authorizationServer ->
+                        authorizationServer.oidc(Customizer.withDefaults())
+                )
+                .oauth2ResourceServer(oauth2Rs ->
+                        oauth2Rs.jwt(Customizer.withDefaults())
+                )
+                .formLogin(configurer ->
+                        configurer.loginPage("/login"));
 
         return http.build();
     }
