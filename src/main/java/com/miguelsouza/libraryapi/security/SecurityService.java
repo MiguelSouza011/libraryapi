@@ -20,6 +20,6 @@ public class SecurityService {
         if(authentication instanceof CustomAuthentication customAuth){
             return customAuth.getUsuario();
         }
-        return null;
+        throw new IllegalArgumentException("Usuario nao autenticado ou tipo de autenticacao invalido");
     }
 }

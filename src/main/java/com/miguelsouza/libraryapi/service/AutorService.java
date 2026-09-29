@@ -36,6 +36,11 @@ public class AutorService {
         if (autor.getId() == null) {
             throw new IllegalArgumentException("Para atualizar, é necessario um autor já salvo");
         }
+
+        if (!repository.existsById(autor.getId())) {
+            throw new IllegalArgumentException("Autor não encontrado com o ID: " + autor.getId());
+        }
+
         validator.validar(autor);
         repository.save(autor);
     }
@@ -49,23 +54,6 @@ public class AutorService {
             throw new OperacaoNaoPermitidaException("Não é permitido, Autor possui livros cadastrados!");
         }
         repository.delete(autor);
-    }
-
-    public List<Autor> pesquisa(String nome, String nacionalidade) {
-
-        if (nome != null && nacionalidade != null) {
-            return repository.findByNomeAndNacionalidade(nome, nacionalidade);
-        }
-
-        if (nome != null) {
-            return repository.findByNome(nome);
-        }
-
-        if (nacionalidade != null) {
-            return repository.findByNacionalidade(nacionalidade);
-        }
-
-        return repository.findAll();
     }
 
     public List<Autor> pesquisaByExample(String nome, String nacionalidade) {

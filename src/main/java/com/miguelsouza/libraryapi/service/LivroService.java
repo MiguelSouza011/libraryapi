@@ -77,6 +77,11 @@ public class LivroService {
        if (livro.getId() == null) {
            throw new IllegalArgumentException("Para atualizar, é necessário que o autor esteja cadastrado!");
        }
+
+        if (!repository.existsById(livro.getId())) {
+            throw new IllegalArgumentException("Livro não encontrado com o ID: " + livro.getId());
+        }
+
        validator.validar(livro);
        repository.save(livro);
     }

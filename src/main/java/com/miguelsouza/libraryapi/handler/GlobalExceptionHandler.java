@@ -1,5 +1,8 @@
-package com.miguelsouza.libraryapi.exceptions;
+package com.miguelsouza.libraryapi.handler;
 
+import com.miguelsouza.libraryapi.exceptions.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
@@ -58,10 +61,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleErrosNaoTratados(Exception e) {
-        System.out.println(e.getMessage());
+        logger.error("Erro não tratado", e);
         return new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Ocorreu um erro inesperado entre em contato com a administração",
                 List.of());
     }
+
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 }

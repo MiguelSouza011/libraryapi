@@ -1,6 +1,6 @@
-package com.miguelsouza.libraryapi.controller.mappers;
+package com.miguelsouza.libraryapi.mappers;
 
-import com.miguelsouza.libraryapi.controller.dto.UsuarioDTO;
+import com.miguelsouza.libraryapi.dto.UsuarioDTO;
 import com.miguelsouza.libraryapi.model.Usuario;
 import org.mapstruct.Mapper;
 

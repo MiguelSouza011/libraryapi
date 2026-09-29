@@ -35,7 +35,7 @@ public class Autor {
     @Deprecated
     public  Autor() {}
     @OneToMany(mappedBy = "autor")
-    @JsonIgnoreProperties("autor")//, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("autor")
     private List<Livro> livros;
     @CreatedDate
     @Column(name = "data_cadastro")

@@ -36,7 +36,7 @@ public class Livro {
     private GeneroLivro genero;
     @Column(name = "preco", precision = 18, scale = 2)
     private BigDecimal preco;
-    @ManyToOne(fetch = FetchType.LAZY)//(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_autor")
     @JsonIgnoreProperties("livros")
     private Autor autor;
