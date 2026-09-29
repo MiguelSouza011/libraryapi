@@ -26,11 +26,6 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(10);
-    }
-
-    @Bean
     public SecurityFilterChain filterChain(
             HttpSecurity http, LoginSocialSuccessHandler successHandler) throws Exception {
         return http
@@ -52,11 +47,6 @@ public class SecurityConfig {
                             .successHandler(successHandler);
                 })
                 .build();
-    }
-
-    //@Bean
-    public UserDetailsService userDetailsService(UsuarioService usuarioService) {
-        return new CustomUserDetailsService(usuarioService);
     }
 
     @Bean
