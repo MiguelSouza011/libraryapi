@@ -9,12 +9,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -43,6 +42,6 @@ public class JwtCustomAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private boolean deveConverter(Authentication authentication) {
-        return authentication != null && authentication instanceof JwtAuthenticationConverter;
+        return authentication instanceof JwtAuthenticationToken;
     }
 }

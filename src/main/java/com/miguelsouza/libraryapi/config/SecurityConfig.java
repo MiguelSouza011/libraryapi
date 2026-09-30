@@ -27,7 +27,8 @@ public class SecurityConfig {
     @Order(2)
     public SecurityFilterChain filterChain(
             HttpSecurity http, LoginSocialSuccessHandler successHandler,
-            JwtCustomAuthenticationFilter jwtCustomAuthenticationFilter) throws Exception {
+            JwtCustomAuthenticationFilter jwtCustomAuthenticationFilter,
+            JwtAuthenticationConverter jwtAuthenticationConverter) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(configurer -> {
@@ -46,7 +47,7 @@ public class SecurityConfig {
                             .successHandler(successHandler);
                 })
                 .oauth2ResourceServer(oauth2Rs -> {
-                    oauth2Rs.jwt(Customizer.withDefaults());
+                    oauth2Rs.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter));
                 })
                 .addFilterAfter(jwtCustomAuthenticationFilter, BearerTokenAuthenticationFilter.class)
                 .build();
@@ -72,6 +73,7 @@ public class SecurityConfig {
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         var authoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        authoritiesConverter.setAuthoritiesClaimName("authorities");
         authoritiesConverter.setAuthorityPrefix("");
         var converter = new JwtAuthenticationConverter();
         converter.setJwtGrantedAuthoritiesConverter(authoritiesConverter);

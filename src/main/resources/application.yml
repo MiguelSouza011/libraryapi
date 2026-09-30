@@ -28,5 +28,11 @@ spring:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
 
+logging:
+  file:
+    name: app.log
+  level:
+    root: warn
+
 springdoc:
   override-with-generic-response: false
