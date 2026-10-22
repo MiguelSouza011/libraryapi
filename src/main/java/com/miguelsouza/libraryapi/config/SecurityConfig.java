@@ -2,6 +2,7 @@ package com.miguelsouza.libraryapi.config;
 
 import com.miguelsouza.libraryapi.security.JwtCustomAuthenticationFilter;
 import com.miguelsouza.libraryapi.security.LoginSocialSuccessHandler;
+import jakarta.servlet.DispatcherType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -13,10 +14,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.core.GrantedAuthorityDefaults;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Configuration
 @EnableWebSecurity
@@ -32,12 +37,16 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(configurer -> {
-                    configurer.loginPage("/login");
+                    configurer.loginPage("/login").permitAll();
                 })
-                .formLogin(Customizer.withDefaults())
                 .authorizeHttpRequests(authorize -> {
                     authorize.requestMatchers("/login/**").permitAll();
-                    authorize.requestMatchers(HttpMethod.POST,"/usuarios/**").permitAll();
+                    authorize.requestMatchers("/auth/login").permitAll();
+                    authorize.requestMatchers(HttpMethod.POST, "/usuarios/gerentes").hasRole("GERENTE");
+                    authorize.requestMatchers(HttpMethod.POST, "/usuarios").permitAll();
+
+                    authorize.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll();
+                    authorize.requestMatchers("/error").permitAll();
 
                     authorize.anyRequest().authenticated();
                 })
@@ -61,7 +70,8 @@ public class SecurityConfig {
                     "/swagger-resources/**",
                     "/swagger-ui.html",
                     "/swagger-ui/**",
-                    "/webjars/**"
+                    "/webjars/**",
+                    "/actuator/**"
         );
     }
 
@@ -72,11 +82,27 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
+
+        var scopeConverter = new JwtGrantedAuthoritiesConverter();
+        scopeConverter.setAuthoritiesClaimName("scope");
+        scopeConverter.setAuthorityPrefix("SCOPE_");
+
         var authoritiesConverter = new JwtGrantedAuthoritiesConverter();
         authoritiesConverter.setAuthoritiesClaimName("authorities");
         authoritiesConverter.setAuthorityPrefix("");
+
         var converter = new JwtAuthenticationConverter();
-        converter.setJwtGrantedAuthoritiesConverter(authoritiesConverter);
+
+        converter.setJwtGrantedAuthoritiesConverter(jwt -> {
+
+            Set<GrantedAuthority> authorities = new HashSet<>();
+
+            authorities.addAll(scopeConverter.convert(jwt));
+            authorities.addAll(authoritiesConverter.convert(jwt));
+
+            return authorities;
+        });
+
         return converter;
     }
 

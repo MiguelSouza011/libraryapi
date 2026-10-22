@@ -1,8 +1,13 @@
 package com.miguelsouza.libraryapi.service;
 
+import com.miguelsouza.libraryapi.dto.CadastroLivroDTO;
+import com.miguelsouza.libraryapi.exceptions.ResourceNotFoundException;
+import com.miguelsouza.libraryapi.mappers.LivroMapper;
+import com.miguelsouza.libraryapi.model.Autor;
 import com.miguelsouza.libraryapi.model.Livro;
 import com.miguelsouza.libraryapi.model.Usuario;
 import com.miguelsouza.libraryapi.model.enums.GeneroLivro;
+import com.miguelsouza.libraryapi.repository.AutorRepository;
 import com.miguelsouza.libraryapi.repository.LivroRepository;
 import com.miguelsouza.libraryapi.security.SecurityService;
 import com.miguelsouza.libraryapi.validator.LivroValidator;
@@ -25,11 +30,21 @@ public class LivroService {
     private final LivroRepository repository;
     private final LivroValidator validator;
     private final SecurityService securityService;
+    private final AutorRepository autorRepository;
+    private final LivroMapper mapper;
 
-   public Livro salvar(Livro livro) {
-       validator.validar(livro);
+   public Livro salvar(CadastroLivroDTO dto) {
        Usuario usuario = securityService.obterUsuarioLogado();
+       Autor autor = autorRepository.findById(dto.idAutor())
+               .orElseThrow( () ->
+                       new ResourceNotFoundException(
+                               "Autor não encontrado com o ID: " + dto.idAutor()
+                       ));
+
+       Livro livro = mapper.toEntity(dto);
+       livro.setAutor(autor);
        livro.setUsuario(usuario);
+       validator.validar(livro);
        return repository.save(livro);
    }
 
@@ -38,6 +53,9 @@ public class LivroService {
    }
 
    public void deletar(Livro livro) {
+       if (livro.getId() == null) {
+           throw new ResourceNotFoundException("Para deletar, é necessário que o autor esteja cadastrado!");
+       }
        repository.delete(livro);
    }
 
@@ -73,16 +91,22 @@ public class LivroService {
        return repository.findAll(specs, pageRequest);
    }
 
-    public void atualizar(Livro livro) {
-       if (livro.getId() == null) {
-           throw new IllegalArgumentException("Para atualizar, é necessário que o autor esteja cadastrado!");
-       }
+    public void atualizar(UUID id, CadastroLivroDTO dto) {
+        Livro livro = repository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Livro não encontrado com o ID: " + id
+                        ));
 
-        if (!repository.existsById(livro.getId())) {
-            throw new IllegalArgumentException("Livro não encontrado com o ID: " + livro.getId());
-        }
+        Autor autor = autorRepository.findById(dto.idAutor())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Autor não encontrado com o ID: " + dto.idAutor()
+                        ));
 
-       validator.validar(livro);
+        mapper.updateEntityFromDTO(dto, livro);
+        livro.setAutor(autor);
+        validator.validar(livro);
        repository.save(livro);
     }
 }

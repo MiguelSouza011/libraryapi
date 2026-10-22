@@ -1,11 +1,14 @@
 package com.miguelsouza.libraryapi.service;
 
+import com.miguelsouza.libraryapi.exceptions.ResourceNotFoundException;
 import com.miguelsouza.libraryapi.model.Client;
 import com.miguelsouza.libraryapi.repository.ClientRepository;
 import com.miguelsouza.libraryapi.validator.ClientValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -24,5 +27,9 @@ public class ClientService {
 
     public Client obterPorId(String clientId) {
         return repository.findByClientId(clientId);
+    }
+
+    public Client obterPorUuid(UUID uuid) {
+        return repository.findById(uuid).orElse(null);
     }
 }

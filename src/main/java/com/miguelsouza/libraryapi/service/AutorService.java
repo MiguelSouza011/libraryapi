@@ -1,6 +1,7 @@
 package com.miguelsouza.libraryapi.service;
 
 import com.miguelsouza.libraryapi.exceptions.OperacaoNaoPermitidaException;
+import com.miguelsouza.libraryapi.exceptions.ResourceNotFoundException;
 import com.miguelsouza.libraryapi.model.Autor;
 import com.miguelsouza.libraryapi.model.Usuario;
 import com.miguelsouza.libraryapi.repository.AutorRepository;
@@ -10,6 +11,8 @@ import com.miguelsouza.libraryapi.validator.AutorValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,11 +37,11 @@ public class AutorService {
 
     public void update(Autor autor) {
         if (autor.getId() == null) {
-            throw new IllegalArgumentException("Para atualizar, é necessario um autor já salvo");
+            throw new ResourceNotFoundException("Para atualizar, é necessario um autor já salvo");
         }
 
         if (!repository.existsById(autor.getId())) {
-            throw new IllegalArgumentException("Autor não encontrado com o ID: " + autor.getId());
+            throw new ResourceNotFoundException("Autor não encontrado com o ID: " + autor.getId());
         }
 
         validator.validar(autor);
@@ -56,7 +59,7 @@ public class AutorService {
         repository.delete(autor);
     }
 
-    public List<Autor> pesquisaByExample(String nome, String nacionalidade) {
+    public Page<Autor> pesquisaByExample(String nome, String nacionalidade, Pageable pageable) {
         var autor = new Autor();
         autor.setNome(nome);
         autor.setNacionalidade(nacionalidade);
@@ -67,7 +70,7 @@ public class AutorService {
                 .withIgnoreCase()
                 .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
         Example<Autor> autorExample = Example.of(autor, matcher);
-        return repository.findAll(autorExample);
+        return repository.findAll(autorExample, pageable);
     }
 
     public boolean possuiLivro(Autor autor) {

@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -58,6 +59,12 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(HttpStatus.FORBIDDEN.value(), "Acesso negado.", List.of());
     }
 
+    @ExceptionHandler(AuthenticationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse handleAuthenticationException(AuthenticationException e) {
+        return new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "Login ou senha inválidos.", List.of());
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleErrosNaoTratados(Exception e) {
@@ -66,6 +73,18 @@ public class GlobalExceptionHandler {
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Ocorreu um erro inesperado entre em contato com a administração",
                 List.of());
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleResourceNotFoundException(
+            ResourceNotFoundException e) {
+
+        return new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                e.getMessage(),
+                List.of()
+        );
     }
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);

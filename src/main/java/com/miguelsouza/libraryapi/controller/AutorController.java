@@ -10,15 +10,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/autores")
@@ -30,7 +31,7 @@ public class AutorController implements GenericController {
     private final AutorMapper mapper;
 
     @PostMapping
-    @PreAuthorize("hasRole('GERENTE')")
+    @PreAuthorize("hasRole('GERENTE') or hasAuthority('SCOPE_GERENTE')")
     @Operation(summary = "Salvar", description = "Cadastrar novo autor")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Cadastrado com sucesso"),
@@ -45,7 +46,9 @@ public class AutorController implements GenericController {
     }
 
     @GetMapping("{id}")
-    @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
+    @PreAuthorize("""
+           hasAnyRole('OPERADOR', 'GERENTE') or
+           hasAuthority('SCOPE_GERENTE')""")
     @Operation(summary = "Obter detalhes", description = "Buscar autor por ID")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Autor encontrado"),
@@ -62,7 +65,7 @@ public class AutorController implements GenericController {
     }
 
     @DeleteMapping("{id}")
-    @PreAuthorize("hasRole('GERENTE')")
+    @PreAuthorize("hasRole('GERENTE') or hasAuthority('SCOPE_GERENTE')")
     @Operation(summary = "Deletar", description = "Deletar autor por ID")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Deletado com sucesso"),
@@ -80,24 +83,30 @@ public class AutorController implements GenericController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
+    @PreAuthorize("""
+           hasAnyRole('OPERADOR', 'GERENTE') or
+           hasAuthority('SCOPE_GERENTE')""")
     @Operation(summary = "Pesquisar", description = "Pesquisar autores por nome e/ou nacionalidade")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Pesquisa realizada com sucesso")
     })
-    public ResponseEntity<List<AutorDTO>> pesquisar(
+    public ResponseEntity<Page<AutorDTO>> pesquisar(
             @RequestParam(value = "nome", required = false) String nome,
-            @RequestParam(value = "nacionalidade", required = false) String nacionalidade) {
-        List<Autor> resultado = service.pesquisaByExample(nome, nacionalidade);
-        List<AutorDTO> lista = resultado
-                .stream()
-                .map(mapper::toDTO).collect(Collectors.toList());
+            @RequestParam(value = "nacionalidade", required = false) String nacionalidade,
+            Pageable pageable) {
+
+        Page<Autor> resultado = service.pesquisaByExample(
+                nome, nacionalidade, pageable);
+
+        Page<AutorDTO> lista = resultado
+                .map(mapper::toDTO);
+
         return ResponseEntity.ok(lista);
     }
 
 
     @PutMapping("{id}")
-    @PreAuthorize("hasRole('GERENTE')")
+    @PreAuthorize("hasRole('GERENTE') or hasAuthority('SCOPE_GERENTE')")
     @Operation(summary = "Atualizar", description = "Atualizar autor existente")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Atualizado com sucesso"),

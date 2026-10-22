@@ -20,6 +20,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
@@ -30,6 +32,8 @@ import org.springframework.security.oauth2.server.authorization.token.OAuth2Toke
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -90,6 +94,7 @@ public class AuthorizationServerConfig {
     public ClientSettings clientSettings() {
         return ClientSettings.builder()
                 .requireAuthorizationConsent(false)
+                .requireProofKey(true)
                 .build();
     }
 
@@ -117,6 +122,17 @@ public class AuthorizationServerConfig {
     @Bean
     public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) throws Exception{
         return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
+    }
+
+    @Bean
+    public JwtEncoder jwtEncoder(JWKSource<SecurityContext> jwkSource) {
+        return new NimbusJwtEncoder(jwkSource);
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
     }
 
     @Bean

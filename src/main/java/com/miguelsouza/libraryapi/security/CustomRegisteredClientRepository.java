@@ -1,8 +1,10 @@
 package com.miguelsouza.libraryapi.security;
 
+import com.miguelsouza.libraryapi.exceptions.ResourceNotFoundException;
 import com.miguelsouza.libraryapi.service.ClientService;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
@@ -10,6 +12,8 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -24,7 +28,12 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
 
     @Override
     public @Nullable RegisteredClient findById(String id) {
-        return null;
+
+        var client = clientService.obterPorUuid(UUID.fromString(id));
+        if(client == null){
+            throw new ResourceNotFoundException("Client not found");
+        }
+        return findByClientId(client.getClientId());
     }
 
     @Override

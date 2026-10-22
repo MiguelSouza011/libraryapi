@@ -1,6 +1,8 @@
 spring:
   application:
     name: libraryapi
+  #profiles:
+    #active: production
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
@@ -28,11 +30,53 @@ spring:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
 
+security:
+  jwt:
+    keystore:
+      path: ${JWT_KEYSTORE_PATH}
+      password: ${JWT_KEYSTORE_PASSWORD}
+      alias: libraryapi
+
 logging:
+  pattern:
+    console: "%clr(%d{dd-MM-yyyy HH:mm:ss}){faint} %clr(%5p) %clr([%t]){faint} %clr(%-40.40logger){cyan} %clr(:){yellow} %m%n"
   file:
     name: app.log
   level:
     root: warn
+    com:
+      miguelsouza: trace
+    org:
+      springframework:
+        web: trace
+        security: trace
+
+# trace
+# debug
+#info
+# warn
+# error
+
+management:
+  server:
+    port: 9090
+  endpoints:
+    web:
+      exposure:
+        include: '*'
 
 springdoc:
   override-with-generic-response: false
+
+
+#production
+---
+
+spring:
+  config:
+    activate:
+      on-profile: production
+  jpa:
+    show-sql: false
+
+

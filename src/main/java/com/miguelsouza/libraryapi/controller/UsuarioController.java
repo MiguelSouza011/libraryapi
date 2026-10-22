@@ -10,7 +10,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -35,6 +37,28 @@ public class UsuarioController implements GenericController{
         Usuario usuario = mapper.toEntity(dto);
         usuarioService.save(usuario);
         URI location = gerarHeaderLocation(usuario.getId());
+        return ResponseEntity.created(location).build();
+    }
+
+    @PostMapping("/gerentes")
+    @PreAuthorize("hasRole('GERENTE')")
+    @Operation(summary = "Cadastrar gerente", description = "Cadastrar novo usuário com a role de gerente")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Gerente cadastrado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro de validação"),
+            @ApiResponse(responseCode = "401", description = "Usuário não autenticado"),
+            @ApiResponse(responseCode = "403", description = "Usuário sem permissão"),
+            @ApiResponse(responseCode = "409", description = "Login ou email já cadastrado")
+    })
+    public ResponseEntity<Void> cadastrarGerente(
+            @RequestBody @Valid UsuarioDTO dto) {
+
+        Usuario usuario = mapper.toEntity(dto);
+
+        usuarioService.saveGerente(usuario);
+
+        URI location = gerarHeaderLocation(usuario.getId());
+
         return ResponseEntity.created(location).build();
     }
 }

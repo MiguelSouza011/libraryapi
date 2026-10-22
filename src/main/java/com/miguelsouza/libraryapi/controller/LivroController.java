@@ -29,7 +29,9 @@ public class LivroController implements GenericController {
     private final LivroMapper mapper;
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
+    @PreAuthorize("""
+           hasAnyRole('OPERADOR', 'GERENTE') or
+           hasAuthority('SCOPE_GERENTE')""")
     @Operation(summary = "Salvar", description = "Cadastrar novo livro")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Cadastrado com sucesso"),
@@ -37,14 +39,15 @@ public class LivroController implements GenericController {
             @ApiResponse(responseCode = "409", description = "ISBN já cadastrado")
     })
     public ResponseEntity<Void> salvar(@RequestBody @Valid CadastroLivroDTO dto) {
-        Livro livro = mapper.toEntity(dto);
-        service.salvar(livro);
+        Livro livro = service.salvar(dto);
         var url = gerarHeaderLocation(livro.getId());
         return ResponseEntity.created(url).build();
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
+    @PreAuthorize("""
+           hasAnyRole('OPERADOR', 'GERENTE') or
+           hasAuthority('SCOPE_GERENTE')""")
     @Operation(summary = "Obter detalhes", description = "Buscar livro por ID")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Livro encontrado"),
@@ -59,7 +62,9 @@ public class LivroController implements GenericController {
     }
 
     @DeleteMapping("{id}")
-    @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
+    @PreAuthorize("""
+           hasAnyRole('OPERADOR', 'GERENTE') or
+           hasAuthority('SCOPE_GERENTE')""")
     @Operation(summary = "Deletar", description = "Deletar livro por ID")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Deletado com sucesso"),
@@ -74,7 +79,9 @@ public class LivroController implements GenericController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
+    @PreAuthorize("""
+           hasAnyRole('OPERADOR', 'GERENTE') or
+           hasAuthority('SCOPE_GERENTE')""")
     @Operation(summary = "Pesquisar", description = "Pesquisar livros com filtros opcionais")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Pesquisa realizada com sucesso")
@@ -102,7 +109,9 @@ public class LivroController implements GenericController {
     }
 
     @PutMapping("{id}")
-    @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
+    @PreAuthorize("""
+           hasAnyRole('OPERADOR', 'GERENTE') or
+           hasAuthority('SCOPE_GERENTE')""")
     @Operation(summary = "Atualizar", description = "Atualizar livro existente")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Atualizado com sucesso"),
@@ -110,12 +119,9 @@ public class LivroController implements GenericController {
             @ApiResponse(responseCode = "404", description = "Livro não encontrado")
     })
     public ResponseEntity<Object> atualizar(@PathVariable("id") String id,
-                                          @RequestBody CadastroLivroDTO dto) {
-        return service.obterPorId(UUID.fromString(id))
-                .map(livro -> {
-                    mapper.updateEntityFromDTO(dto, livro);
-                    service.atualizar(livro);
-                    return ResponseEntity.noContent().build();
-                }).orElseGet( () -> ResponseEntity.notFound().build() );
+                                          @RequestBody @Valid CadastroLivroDTO dto) {
+
+        service.atualizar(UUID.fromString(id), dto);
+        return ResponseEntity.noContent().build();
     }
 }

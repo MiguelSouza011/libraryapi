@@ -33,3 +33,19 @@ build/
 .vscode/
 
 .env
+
+
+comandos-docker.txt
+comandos-sql.txt
+
+# Certificados e chaves privadas
+*.p12
+*.pfx
+*.jks
+*.key
+*.pem
+
+# Logs
+*.log
+*.log.*
+logs/
