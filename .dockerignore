@@ -1,0 +1,24 @@
+
+# Credenciais e variáveis de ambiente
+.env
+.env.*
+!.env.example
+
+# Git e GitHub
+.git
+.github
+
+# IntelliJ e ferramentas locais
+.idea
+.junie
+
+# Arquivos gerados pelo Maven
+target
+
+# Logs
+*.log
+*.log.*
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
