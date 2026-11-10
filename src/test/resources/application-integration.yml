@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/libraryapi}
+    username: ${DB_USERNAME:libraryapi}
+    password: ${DB_PASSWORD:libraryapi}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:test-client}
+            client-secret: ${GOOGLE_CLIENT_SECRET:test-secret}
+
+security:
+  jwt:
+    keystore:
+      path: ${JWT_KEYSTORE_PATH:classpath:keystore.p12}
+      password: ${JWT_KEYSTORE_PASSWORD:test-password}
+      alias: libraryapi

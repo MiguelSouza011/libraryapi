@@ -45,11 +45,17 @@ logging:
   level:
     root: warn
     com:
-      miguelsouza: trace
+      miguelsouza: info
     org:
       springframework:
-        web: trace
-        security: trace
+        web: info
+        security: info
+
+
+app:
+  rate-limit:
+    requests: ${RATE_LIMIT_REQUESTS:60}
+    window-seconds: ${RATE_LIMIT_WINDOW_SECONDS:60}
 
 # trace
 # debug

@@ -23,7 +23,9 @@ public class LivroValidator {
         }
 
         if(isPrecoObrigatorio(livro)) {
-            throw new CampoInvalidoException("Preço", "Para livro com ano a partir de 2020, o preço obrigatório");
+            throw new CampoInvalidoException(
+                    "Para livro com ano a partir de 2020, o preço obrigatório",
+                    "preco");
         }
     }
 
