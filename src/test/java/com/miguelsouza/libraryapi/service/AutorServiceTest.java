@@ -1,7 +1,9 @@
 package com.miguelsouza.libraryapi.service;
 
+import com.miguelsouza.libraryapi.dto.AtualizacaoAutorDTO;
 import com.miguelsouza.libraryapi.exceptions.OperacaoNaoPermitidaException;
 import com.miguelsouza.libraryapi.exceptions.ResourceNotFoundException;
+import com.miguelsouza.libraryapi.mappers.AutorMapper;
 import com.miguelsouza.libraryapi.model.Autor;
 import com.miguelsouza.libraryapi.repository.AutorRepository;
 import com.miguelsouza.libraryapi.repository.LivroRepository;
@@ -13,6 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,6 +30,7 @@ class AutorServiceTest {
     @Mock private AutorValidator validator;
     @Mock private LivroRepository livroRepository;
     @Mock private SecurityService securityService;
+    @Mock private AutorMapper mapper;
     @InjectMocks private AutorService service;
 
     @Test
@@ -42,11 +47,24 @@ class AutorServiceTest {
     }
 
     @Test
-    void naoDeveAtualizarAutorSemId() {
-        Autor autor = new Autor();
+    void naoDeveAtualizarAutorNaoEncontrado() {
+        UUID id = UUID.randomUUID();
+        AtualizacaoAutorDTO dto = new AtualizacaoAutorDTO(
+                "Machado de Assis",
+                LocalDate.of(1839, 6, 21),
+                "Brasileira"
+        );
 
-        assertThrows(ResourceNotFoundException.class, () -> service.update(autor));
-        verifyNoInteractions(repository, validator);
+        when(repository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> service.update(id, dto)
+        );
+
+        verify(repository).findById(id);
+        verifyNoMoreInteractions(repository);
+        verifyNoInteractions(mapper, validator);
     }
 
     @Test

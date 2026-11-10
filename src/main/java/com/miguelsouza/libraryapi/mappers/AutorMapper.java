@@ -1,6 +1,8 @@
 package com.miguelsouza.libraryapi.mappers;
 
+import com.miguelsouza.libraryapi.dto.AtualizacaoAutorDTO;
 import com.miguelsouza.libraryapi.dto.AutorDTO;
+import com.miguelsouza.libraryapi.dto.CadastroAutorDTO;
 import com.miguelsouza.libraryapi.model.Autor;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -20,5 +22,7 @@ public interface AutorMapper {
     @Mapping(target = "dataAtualizacao", ignore = true)
     @Mapping(target = "usuario", ignore = true)
     @Mapping(target = "livros", ignore = true)
-    void updateEntityFromDTO(AutorDTO dto, @MappingTarget Autor autor);
+    void updateEntityFromDTO(AtualizacaoAutorDTO dto, @MappingTarget Autor autor);
+
+    Autor toEntity(CadastroAutorDTO dto);
 }

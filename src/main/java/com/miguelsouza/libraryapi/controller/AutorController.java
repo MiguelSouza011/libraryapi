@@ -1,6 +1,8 @@
 package com.miguelsouza.libraryapi.controller;
 
+import com.miguelsouza.libraryapi.dto.AtualizacaoAutorDTO;
 import com.miguelsouza.libraryapi.dto.AutorDTO;
+import com.miguelsouza.libraryapi.dto.CadastroAutorDTO;
 import com.miguelsouza.libraryapi.mappers.AutorMapper;
 import com.miguelsouza.libraryapi.model.Autor;
 import com.miguelsouza.libraryapi.service.AutorService;
@@ -10,8 +12,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,7 +42,7 @@ public class AutorController implements GenericController {
             @ApiResponse(responseCode = "402", description = "Erro de validação"),
             @ApiResponse(responseCode = "409", description = "Autor já cadastrado")
     })
-    public ResponseEntity<Void> salvar(@RequestBody @Valid AutorDTO dto) {
+    public ResponseEntity<Void> salvar(@RequestBody @Valid CadastroAutorDTO dto) {
         Autor autor = mapper.toEntity(dto);
         service.salvar(autor);
         URI location = gerarHeaderLocation(autor.getId());
@@ -54,14 +58,10 @@ public class AutorController implements GenericController {
             @ApiResponse(responseCode = "200", description = "Autor encontrado"),
             @ApiResponse(responseCode = "404", description = "Autor não encontrado")
     })
-    public ResponseEntity<AutorDTO> obterDetalhes(@PathVariable("id") String id) {
-        var idAutor = UUID.fromString(id);
-        return service
-                .obterPorId(idAutor)
-                .map(autor -> {
-                    AutorDTO dto = mapper.toDTO(autor);
-                    return ResponseEntity.ok(dto);
-                }).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<AutorDTO> obterDetalhes(@PathVariable UUID id) {
+        return service.obterPorId(id)
+                .map(autor -> ResponseEntity.ok(mapper.toDTO(autor)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("{id}")
@@ -93,6 +93,8 @@ public class AutorController implements GenericController {
     public ResponseEntity<Page<AutorDTO>> pesquisar(
             @RequestParam(value = "nome", required = false) String nome,
             @RequestParam(value = "nacionalidade", required = false) String nacionalidade,
+            @ParameterObject
+            @PageableDefault(size = 1, sort = "nome", direction = Sort.Direction.ASC)
             Pageable pageable) {
 
         Page<Autor> resultado = service.pesquisaByExample(
@@ -113,12 +115,8 @@ public class AutorController implements GenericController {
             @ApiResponse(responseCode = "400", description = "Erro de validação"),
             @ApiResponse(responseCode = "404", description = "Autor não encontrado")
     })
-    public ResponseEntity<Object> update(@PathVariable("id") String id, @RequestBody AutorDTO dto) {
-        return service.obterPorId(UUID.fromString(id))
-                .map(autor -> {
-                    mapper.updateEntityFromDTO(dto, autor);
-                    service.update(autor);
-                    return ResponseEntity.noContent().build();
-                }).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<Object> update(@PathVariable String id, @RequestBody @Valid AtualizacaoAutorDTO dto) {
+        service.update(UUID.fromString(id), dto);
+        return ResponseEntity.noContent().build();
     }
 }

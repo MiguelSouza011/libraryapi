@@ -1,5 +1,6 @@
 package com.miguelsouza.libraryapi.controller;
 
+import com.miguelsouza.libraryapi.dto.CadastroAutorDTO;
 import com.miguelsouza.libraryapi.mappers.AutorMapper;
 import com.miguelsouza.libraryapi.model.Autor;
 import com.miguelsouza.libraryapi.service.AutorService;
@@ -39,16 +40,26 @@ class AutorControllerMockMvcTest {
     void deveCriarAutorEInformarLocation() throws Exception {
         UUID id = UUID.randomUUID();
         Autor autor = autor(id);
-        when(mapper.toEntity(any())).thenReturn(autor);
+
+        when(mapper.toEntity(any(CadastroAutorDTO.class)))
+                .thenReturn(autor);
+
         when(service.salvar(autor)).thenReturn(autor);
 
         mockMvc.perform(post("/autores")
                         .contentType(APPLICATION_JSON)
                         .content("""
-                                {"nome":"Machado de Assis","dataNascimento":"1839-06-21","nacionalidade":"Brasileira"}
-                                """))
+                            {
+                                "nome": "Machado de Assis",
+                                "dataNascimento": "1839-06-21",
+                                "nacionalidade": "Brasileira"
+                            }
+                            """))
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "http://localhost/autores/" + id));
+                .andExpect(header().string(
+                        "Location",
+                        "http://localhost/autores/" + id
+                ));
     }
 
     @Test

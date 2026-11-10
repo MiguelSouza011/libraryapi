@@ -1,7 +1,9 @@
 package com.miguelsouza.libraryapi.service;
 
+import com.miguelsouza.libraryapi.dto.AtualizacaoAutorDTO;
 import com.miguelsouza.libraryapi.exceptions.OperacaoNaoPermitidaException;
 import com.miguelsouza.libraryapi.exceptions.ResourceNotFoundException;
+import com.miguelsouza.libraryapi.mappers.AutorMapper;
 import com.miguelsouza.libraryapi.model.Autor;
 import com.miguelsouza.libraryapi.model.Usuario;
 import com.miguelsouza.libraryapi.repository.AutorRepository;
@@ -27,6 +29,7 @@ public class AutorService {
     private final AutorValidator validator;
     private final LivroRepository livroRepository;
     private final SecurityService securityService;
+    private final AutorMapper mapper;
 
     public Autor salvar(Autor autor) {
         validator.validar(autor);
@@ -35,16 +38,18 @@ public class AutorService {
         return repository.save(autor);
     }
 
-    public void update(Autor autor) {
-        if (autor.getId() == null) {
-            throw new ResourceNotFoundException("Para atualizar, é necessario um autor já salvo");
-        }
+    public void update(UUID id, AtualizacaoAutorDTO dto) {
 
-        if (!repository.existsById(autor.getId())) {
-            throw new ResourceNotFoundException("Autor não encontrado com o ID: " + autor.getId());
-        }
+        Autor autor = repository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Autor não encontrado com o ID: " + id
+                        ));
+
+        mapper.updateEntityFromDTO(dto, autor);
 
         validator.validar(autor);
+
         repository.save(autor);
     }
 
