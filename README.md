@@ -29,6 +29,8 @@ API REST para gerenciamento de bibliotecas, desenvolvida com Java e Spring Boot.
 - Maven
 - Docker
 - Springdoc OpenAPI
+- JUnit 5, Mockito e MockMvc
+- GitHub Actions para CI/CD
 
 ## Como utilizar
 
@@ -95,7 +97,8 @@ Com a aplicação em execução, os principais endereços são:
 | Recurso | Endereço |
 | --- | --- |
 | API | `http://localhost:8080` |
-| Swagger UI | `http://localhost:8080/swagger-ui.html` |
+| Swagger UI (documentação publicada) | [http://18.222.6.192:8080/swagger-ui/index.html#/](http://18.222.6.192:8080/swagger-ui/index.html#/) |
+| Swagger UI (local) | `http://localhost:8080/swagger-ui.html` |
 | OpenAPI | `http://localhost:8080/v3/api-docs` |
 | Actuator | `http://localhost:9090/actuator` |
 
@@ -133,17 +136,49 @@ Os DTOs, mappers, validators, handlers de exceção e componentes de segurança 
 
 ## Testes
 
-Execute a suíte de testes com:
+O projeto utiliza JUnit 5, Mockito e MockMvc para testes automatizados em diferentes níveis:
+
+| Tipo | Cobertura | Execução |
+| --- | --- | --- |
+| Unitários | Validadores, serviços, segurança e tratamento de exceções, com dependências isoladas por mocks | `./mvnw -B -ntp clean verify -Dskip.integration.tests=true` |
+| Funcionais | Fluxos HTTP dos controllers usando MockMvc, incluindo status, headers e payloads | Executados junto com os testes unitários pelo comando acima |
+| Integração | Persistência real de autores e livros no PostgreSQL | `./mvnw -B -ntp -Pintegration -Dspring.profiles.active=integration clean verify` |
+
+Para executar apenas a suíte padrão localmente:
 
 ```bash
 ./mvnw test
 ```
 
-Os testes atuais cobrem a aplicação, repositórios de autores e livros e operações transacionais.
+No Windows, use `mvnw.cmd` no lugar de `./mvnw`. Os relatórios são gerados em `target/surefire-reports/` e `target/failsafe-reports/`.
+
+## CI/CD com GitHub Actions
+
+O workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) é executado em pushes e pull requests para as branches `main`, `master` e `develop`. O pipeline:
+
+1. Compila o projeto com Java 25 e executa os testes unitários e funcionais com Maven.
+2. Inicia um serviço PostgreSQL e executa os testes de integração com o perfil `integration`.
+3. Gera e publica o relatório JaCoCo e os relatórios de testes como artefatos do workflow.
+4. Após a aprovação de todas as etapas, em um push para `main`, constrói e publica a imagem Docker no Docker Hub.
+5. Faz o deploy da imagem no EC2 via SSH, mantendo rollback para a versão anterior caso a inicialização falhe.
+
+Configure os seguintes secrets no repositório para habilitar o deploy:
+
+```text
+DOCKERHUB_USERNAME
+DOCKERHUB_TOKEN
+EC2_HOST
+EC2_SSH_KEY
+```
+
+O servidor EC2 também deve possuir Docker instalado e o arquivo `/opt/libraryapi/.env` com as variáveis de ambiente da aplicação. O endereço da documentação publicada após o deploy é:
+
+[Swagger UI](http://18.222.6.192:8080/swagger-ui/index.html#/)
 
 ## Onde encontrar ajuda
 
-- Consulte a documentação interativa em `/swagger-ui.html`.
+- Consulte a [documentação interativa publicada no Swagger UI](http://18.222.6.192:8080/swagger-ui/index.html#/).
+- Em um ambiente local, acesse a documentação em `/swagger-ui.html`.
 - Verifique os exemplos e scripts de banco no arquivo `comandos-sql.txt`.
 - Abra uma [issue](https://github.com/MiguelSouza011/libraryapi/issues) para relatar problemas ou sugerir melhorias.
 - Consulte o [código-fonte](https://github.com/MiguelSouza011/libraryapi) para detalhes de implementação.
